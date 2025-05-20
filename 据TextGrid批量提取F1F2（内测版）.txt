@@ -1,0 +1,35 @@
+##据TextGrid批量提取F1、F2
+##说明：对wav文件进行标注时，对需要提取F1F2的段作上标注，标注符号任意（如1,2,3,a,b,c……）
+##注意请保持~~标注好的textgrid与wav文件名相同~~
+##在列表栏同时选中wav与对应的textgrid文件后即可运行本脚本
+##（若有Formant文件为正常成分，请放心饮用（）
+#======================%% Code %%========================#
+
+name$="yhy"    ;根据praat 列表栏显示的文件名更改引号内的名称（如列表栏显示“1 Sound vowel”，则输入"vowel"）
+writeInfoLine:"F2"+tab$+"F1"
+sp=selected("Sound")
+tg=selected("TextGrid")
+selectObject:tg
+n=Get number of intervals: 1
+selectObject:sp
+To Formant (burg): 0,6,5500,0.025,50  ;可根据发音人实际情况调整最大共振峰数6与阈值5500Hz
+sum=0
+selectObject:tg
+for i from 1 to n
+	ans$=Get label of interval: 1,i
+	if ans$<>""
+		sum=sum+1
+		start=Get start point: 1,i
+		end=Get end point: 1,i
+		
+		selectObject:"Formant "+name$
+		f1=Get mean: 1,start,end,"hertz"
+		f2=Get mean: 2,start,end,"hertz"
+		appendInfoLine: i,tab$,'f2:2',tab$,'f1:2'
+		selectObject:tg
+	endif
+endfor
+appendInfoLine:"共提取",sum,"组F1F2"  ;校验
+#======================%% Code %%========================#
+#written by 任金洋
+#version 2024.12.10
